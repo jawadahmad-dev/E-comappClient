@@ -3,7 +3,7 @@
 A modern, responsive ecommerce web application built with Angular, PrimeNG, and Tailwind CSS.
 Consumes a RESTful ASP.NET Core Web API backend with JWT-based authentication.
 
-> 🔗 Backend Repo: https://github.com/jawadahmad-dev/E-comappBackend
+> 🔗 Backend Repo: https://github.com/jawadahmad-dev/E-comapp-Backend
 
 ---
 
