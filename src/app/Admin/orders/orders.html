@@ -1,0 +1,177 @@
+<div class="card mt-10">
+  <div class="flex flex-col mx-6 md:flex-row md:items-center md:justify-between gap-4 mb-5">
+    <div class="w-full md:max-w-md">
+      <p-floatlabel>
+        <p-iconfield class="w-full">
+          <input
+            pInputText
+            id="over_label"
+            (input)="Search()"
+            [(ngModel)]="searchValue"
+            autocomplete="off"
+            style="border: none !important; outline: none"
+            class="w-full shadow-md! py-1! bg-zinc-100! px-2"
+          />
+        </p-iconfield>
+        <label for="over_label">Search Orders</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <span>
+        <h5>Filter By Status</h5>
+        <p-select
+          [options]="filterStatusOptions"
+          [(ngModel)]="filterStatusValue"
+          (onChange)="filterByStatus()"
+          placeholder="Status"
+          class="w-full sm:w-44"
+        ></p-select>
+      </span>
+
+      <span>
+        <h5>Filter By Order Time</h5>
+        <p-select
+          [options]="filterByOrderTimeOptions"
+          [(ngModel)]="filterbyTimeValue"
+          (onChange)="filterByTime()"
+          placeholder="Time"
+          class="w-full sm:w-44"
+        ></p-select>
+      </span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p-table [value]="orderArr" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }">
+      <ng-template #header>
+        <tr>
+          <th style="width: 5rem"></th>
+          <th>Order Id</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>OrderDate</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-order let-expanded="expanded">
+        <tr class="all">
+          <td>
+            <p-button
+              type="button"
+              pRipple
+              [pRowToggler]="order"
+              [text]="true"
+              severity="secondary"
+              [rounded]="true"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            />
+          </td>
+          <td class="orderId">{{ order.id }}</td>
+          <td>{{ order.customerDetails.name }}</td>
+          <td class="email">{{ order.customerDetails.email }}</td>
+          <td>{{ order.createdAt | date: 'short' }}</td>
+          <td>
+            <span
+              class="px-4 py-1 font-medium"
+              [ngClass]="
+                order.status == 'Pending' || order.status == 'Canceled'
+                  ? 'bg-yellow-100 text-yellow-600'
+                  : order.status == 'Rejected'
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-green-100 text-green-600'
+              "
+            >
+              {{ order.status }}</span
+            >
+          </td>
+
+          <td>{{ order.orderTotal | currency: 'USD' }}</td>
+          <td>
+            <span class="flex gap-2">
+              <button
+                [disabled]="order.status !== 'Pending' && order.status !== 'Processing'"
+                pButton
+                type="button"
+                label="Reject"
+                icon="pi pi-times"
+                class="p-button-danger p-button-sm"
+                (click)="UpdateOrder(order.id, 'Rejected')"
+              ></button>
+
+              <button
+                pButton
+                [disabled]="order.status !== 'Pending'"
+                type="button"
+                label="Proceed"
+                icon="pi pi-check"
+                class="p-button-success p-button-sm"
+                (click)="UpdateOrder(order.id, 'Processing')"
+              ></button>
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #expandedrow let-product>
+        <tr>
+          <td colspan="7">
+            <div class="p-4">
+              <p-table [value]="product.orderItems" dataKey="id">
+                <ng-template #header>
+                  <tr>
+                    <th pSortableColumn="id">
+                      <div class="flex items-center gap-2">Title</div>
+                    </th>
+                    <th pSortableColumn="id">
+                      <div class="flex items-center gap-2">Image</div>
+                    </th>
+                    <th pSortableColumn="customer">
+                      <div class="flex items-center gap-2">Category</div>
+                    </th>
+                    <th pSortableColumn="customer">
+                      <div class="flex items-center gap-2">Qty</div>
+                    </th>
+
+                    <th pSortableColumn="date">
+                      <div class="flex items-center gap-2">ItemTotal</div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-order>
+                  <tr>
+                    <td>{{ order.resProduct.title }}</td>
+                    <td>
+                      <img
+                        [src]="authService.baseUrl + '/' + order.resProduct.imageUrl"
+                        alt=""
+                        class="w-24 rounded"
+                      />
+                    </td>
+                    <td>{{ order.resProduct.category }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.productTotal | currency: 'USD' }}</td>
+                  </tr>
+                </ng-template>
+
+                <ng-template #emptymessage>
+                  <tr>
+                    <td colspan="6">There are no order for this product yet.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="text-center text-red-400 py-4">
+            No results found related to your search
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

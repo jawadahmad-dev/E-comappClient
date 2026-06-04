@@ -1,0 +1,87 @@
+<nav
+  class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 sm:px-6 lg:px-8"
+>
+  <div class="flex items-center justify-between h-16">
+    <!-- Brand -->
+    <div class="flex items-center gap-3 cursor-pointer" routerLink="/customer">
+      <div
+        class="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600"
+      >
+        <i class="pi pi-shopping-bag text-xl"></i>
+      </div>
+      <span class="text-lg font-bold text-gray-900 tracking-tight hidden sm:inline"
+        >Customer Panel</span
+      >
+    </div>
+
+    <!-- Desktop Nav -->
+    <div class="hidden md:flex items-center gap-1">
+      <a
+        routerLink="/customer/orders"
+        routerLinkActive="text-indigo-600 bg-indigo-50"
+        class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:text-gray-900 hover:bg-gray-100 transition-all"
+      >
+        Orders
+      </a>
+      <!-- Add more nav links here -->
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-3">
+      <!-- Profile -->
+      <div routerLink="/profile" class="cursor-pointer group">
+        <p-avatar
+          icon="pi pi-user"
+          shape="circle"
+          size="normal"
+          class="cursor-pointer hover:ring-1 hover:ring-blue-400 hover:ring-offset-2 rounded-full transition-all"
+        ></p-avatar>
+      </div>
+
+      <!-- Logout -->
+      <p-button
+        label="Logout"
+        icon="pi pi-sign-out"
+        iconPos="right"
+        styleClass="!px-4  !font-medium !bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100 hover:!text-red-700 !rounded-lg !border !transition-colors"
+        (click)="authService.logout()"
+      ></p-button>
+
+      <!-- Mobile Toggle -->
+      <button
+        class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+        (click)="mobileMenuOpen = !mobileMenuOpen"
+        aria-label="Toggle navigation"
+      >
+        <i class="pi" [class]="mobileMenuOpen ? 'pi-times' : 'pi-bars'"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen) {
+    <div class="md:hidden border-t border-gray-100 bg-white">
+      <div class="px-4 py-3 space-y-1">
+        <a
+          routerLink="/orders"
+          routerLinkActive="text-indigo-600 bg-indigo-50"
+          (click)="mobileMenuOpen = false"
+          class="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          Orders
+        </a>
+        <button
+          (click)="authService.logout(); mobileMenuOpen = false"
+          class="w-full text-left px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2"
+        >
+          <i class="pi pi-sign-out"></i> Logout
+        </button>
+      </div>
+    </div>
+  }
+</nav>
+
+<!-- Main Content Area -->
+<main class="bg-gray-50 min-h-[calc(100vh-4rem)]">
+  <router-outlet></router-outlet>
+</main>

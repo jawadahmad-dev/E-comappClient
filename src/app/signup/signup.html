@@ -1,0 +1,39 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white shadow-xl rounded-2xl p-10 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">Create Account</h2>
+
+    <form [formGroup]="SignUpForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Name -->
+      <p-floatLabel>
+        <input pInputText id="name" formControlName="name" class="w-full" />
+        <label for="name">Full Name</label>
+      </p-floatLabel>
+
+      <!-- Email -->
+      <p-floatLabel>
+        <input pInputText id="email" formControlName="email" class="w-full" />
+        <label for="email">Email</label>
+      </p-floatLabel>
+
+      <!-- Password --><p-floatLabel>
+        <p-password
+          formControlName="password"
+          inputId="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        ></p-password>
+        <label for="password">Password</label>
+      </p-floatLabel>
+
+      <!-- Button -->
+      <button pButton type="submit" label="Sign Up" class="w-full"></button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-6">
+      Already have an account?
+      <a style="cursor: pointer !important" routerLink="/signin" class="text-blue-500"> Sign In </a>
+    </p>
+  </div>
+</div>

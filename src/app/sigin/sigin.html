@@ -1,0 +1,42 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white shadow-xl rounded-2xl p-10 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">Welcome Back</h2>
+
+    <form [formGroup]="SignInForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Email -->
+      <div>
+        <p-floatLabel>
+          <input pInputText id="email" formControlName="email" class="w-full" />
+          <label for="email">Email</label>
+        </p-floatLabel>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <p-floatLabel>
+          <p-password
+            formControlName="password"
+            inputId="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          ></p-password>
+          <label for="password">Password</label>
+        </p-floatLabel>
+      </div>
+
+      <!-- Login Button -->
+      <button pButton type="submit" label="Sign In" class="w-full"></button>
+    </form>
+
+    <!-- Divider -->
+    <div class="my-6 border-t"></div>
+
+    <!-- Signup link -->
+    <p class="text-center text-sm text-gray-500">
+      Don't have an account?
+      <a routerLink="/signup" class="text-blue-500 font-medium"> Create Account </a>
+    </p>
+  </div>
+</div>

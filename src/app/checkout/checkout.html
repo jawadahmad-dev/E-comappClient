@@ -1,0 +1,116 @@
+<div class="min-h-screen bg-slate-50 py-6 px-4 md:px-6">
+  <form [formGroup]="checkOutForm" (ngSubmit)="onSubmit()" class="mx-auto max-w-7xl">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-slate-900">Checkout</h1>
+      <p class="text-sm text-slate-600">Complete your order details</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- LEFT SIDE -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Contact Info -->
+        <p-card>
+          <ng-template pTemplate="title">Contact Information</ng-template>
+
+          <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm mb-1">Full Name</label>
+                <input formControlName="name" pInputText class="w-full" />
+              </div>
+
+              <div>
+                <label class="block text-sm mb-1">Phone</label>
+                <input formControlName="phone" pInputText class="w-full" />
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm mb-1">Email</label>
+                <input formControlName="email" pInputText class="w-full" />
+              </div>
+            </div>
+          </ng-template>
+        </p-card>
+
+        <!-- Address -->
+        <p-card>
+          <ng-template pTemplate="title">Shipping Address</ng-template>
+
+          <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-sm mb-1">Address</label>
+                <input formControlName="address" pInputText class="w-full" />
+              </div>
+
+              <div>
+                <label class="block text-sm mb-1">City</label>
+                <input formControlName="city" pInputText class="w-full" />
+              </div>
+
+              <div>
+                <label class="block text-sm mb-1">Postal Code</label>
+                <input formControlName="postalCode" pInputText class="w-full" />
+              </div>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+
+      <!-- RIGHT SIDE (SUMMARY) -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-6">
+          <p-card>
+            <ng-template pTemplate="title">Order Summary</ng-template>
+
+            <ng-template pTemplate="content">
+              <div class="space-y-4">
+                <!-- Dynamic Cart Items -->
+                <div *ngFor="let item of cartItems" class="flex gap-4">
+                  <div class="h-16 w-16 bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      *ngIf="item?.resProduct?.imageUrl"
+                      [src]="authService.baseUrl + '/' + item?.resProduct?.imageUrl"
+                      class="h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <div class="flex-1">
+                    <p class="font-medium">{{ item?.resProduct?.title }}</p>
+                    <p class="text-sm text-gray-500">Qty: {{ item.quantity }}</p>
+                    <p class="font-semibold">Rs. {{ item?.resProduct?.sellingPrice }}</p>
+                  </div>
+                </div>
+
+                <p-divider></p-divider>
+
+                <!-- Totals -->
+                <div class="flex justify-between text-sm">
+                  <span>Subtotal</span>
+                  <span>Rs.{{ total }}</span>
+                </div>
+
+                <p-divider></p-divider>
+
+                <div class="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>Rs. {{ total }}</span>
+                </div>
+
+                <!-- Submit -->
+                <button
+                  pButton
+                  type="submit"
+                  label="Place Order"
+                  icon="pi pi-check"
+                  class="w-full mt-3"
+                ></button>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

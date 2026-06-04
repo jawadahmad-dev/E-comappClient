@@ -1,0 +1,189 @@
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/50">
+  <div
+    class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"
+  ></div>
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-12 relative z-10"
+  >
+    <div class="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+      <!-- Badge -->
+      <span
+        class="inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full"
+      >
+        <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+        NEW SEASON ARRIVALS
+      </span>
+
+      <!-- Heading -->
+      <h1
+        class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-[1.1]"
+      >
+        Discover
+        <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+          >Premium</span
+        >
+        Lifestyle Products
+      </h1>
+
+      <!-- Description -->
+      <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
+        Curated collections, unbeatable prices, and lightning-fast delivery. Upgrade your everyday
+        with quality that lasts.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
+        <!-- Elegant Outline Dark -->
+        <p-button
+          routerLink="/shop"
+          label="Shop Now"
+          icon="pi pi-arrow-up-right"
+          iconPos="right"
+          outlined
+          rounded
+          pRipple
+          styleClass="
+      !px-8 !py-4
+      !text-base !font-semibold
+      !text-slate-700
+      rounded!
+      shadow-sm
+      active:opacity-90
+      tracking-wide
+      !w-full sm:!w-auto
+      transition-all duration-300 ease-out
+    "
+        ></p-button>
+      </div>
+    </div>
+    <div class="lg:w-1/2 relative">
+      <div
+        class="absolute -top-10 -left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"
+      ></div>
+      <img
+        src="https://media.istockphoto.com/id/1729402032/photo/an-unrecognizable-beautiful-woman-holding-her-shopping-bags.jpg?s=612x612&w=0&k=20&c=lld45QpIxSQUrhVsZLPuSC3X08jJYU6rsHT8U4l7MS0="
+        alt="Hero Shopping"
+        class="relative rounded-2xl shadow-2xl w-full max-w-lg mx-auto transform hover:scale-[1.02] transition-transform duration-500 object-cover aspect-[4/3]"
+      />
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products (PrimeNG Carousel) -->
+<section class="py-20 bg-gray-50/80">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900">Trending Now</h2>
+        <p class="text-gray-600 mt-1">Handpicked by our styling team</p>
+      </div>
+      <a
+        routerLink="/shop"
+        class="hidden sm:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+      >
+        View All <i class="pi pi-arrow-right text-sm"></i>
+      </a>
+    </div>
+
+    <p-carousel
+      [value]="ProductsArr()"
+      [numVisible]="4"
+      [numScroll]="1"
+      [responsiveOptions]="carouselResponsive"
+      [circular]="true"
+      [autoplayInterval]="4500"
+      [showNavigators]="true"
+      [showIndicators]="false"
+    >
+      <ng-template let-product pTemplate="item">
+        <div
+          class="group bg-white rounded-2xl mx-3! shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full flex flex-col"
+        >
+          <div class="relative overflow-hidden rounded-xl bg-gray-100 mb-4 aspect-square">
+            <img
+              [routerLink]="['/details', product.id]"
+              [src]="authService.baseUrl + '/' + product.imageUrl"
+              [alt]="product.name"
+              class="w-full cursor-pointer! h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+
+            <button
+              (click)="sharedService.addtoCart(product)"
+              class="absolute cursor-pointer! bottom-3 right-3 p-2.5 bg-white/90 backdrop-blur rounded-full shadow hover:bg-blue-600 hover:text-white transition-all translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+            >
+              <i class="pi pi-cart-plus"></i>
+            </button>
+          </div>
+          <div class="px-4 py-2">
+            <h3 class="font-semibold text-gray-800 truncate mt-1">{{ product.title }}</h3>
+            <div class="flex items-center gap-2 mt-2">
+              <p-rating [ngModel]="product.rating" [readonly]="true" [stars]="5"></p-rating>
+              <span class="text-sm text-gray-500">
+                {{ product.avgReview == 0 ? 'Nan' : product.avgReview }}</span
+              >
+            </div>
+            <div class="flex items-center justify-between mt-auto pt-3">
+              <div class="flex items-baseline gap-2">
+                <span class="text-lg font-bold text-gray-900">${{ product.sellingPrice }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-carousel>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+    <div>
+      <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
+        <i class="pi pi-box text-blue-500"></i> ShopApp
+      </h3>
+      <p class="text-sm text-gray-400 leading-relaxed">
+        Your premium destination for quality products and seamless shopping experiences. Built for
+        modern lifestyles.
+      </p>
+      <div class="flex gap-4 mt-6">
+        <a
+          class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+          ><i class="pi pi-facebook"></i
+        ></a>
+        <a
+          class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-400 transition-colors"
+          ><i class="pi pi-twitter"></i
+        ></a>
+        <a
+          class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition-colors"
+          ><i class="pi pi-instagram"></i
+        ></a>
+      </div>
+    </div>
+    @for (col of footerLinks(); track col.title) {
+      <div>
+        <h4 class="text-white font-semibold mb-4">{{ col.title }}</h4>
+        <ul class="space-y-2.5 text-sm">
+          @for (link of col.links; track link.label) {
+            <li>
+              <a
+                [routerLink]="link.route"
+                class="hover:text-blue-400 transition-colors flex items-center gap-2 group"
+                ><span class="w-0 group-hover:w-2 transition-all"></span>{{ link.label }}</a
+              >
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500"
+  >
+    <p>&copy; {{ currentYear }} ShopApp. All rights reserved.</p>
+    <div class="flex gap-6">
+      <a class="hover:text-gray-300 transition-colors">Privacy Policy</a>
+      <a class="hover:text-gray-300 transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</footer>

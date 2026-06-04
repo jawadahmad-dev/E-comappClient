@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@use 'tailwindcss';
+@import 'primeicons/primeicons.css';
+
+.customHW {
+  height: 30px !important;
+  width: 150px !important;
+}
+
+ng-ratings {
+  --rating-filled-color: #38af54;
+  --rating-empty-color: #dcdada;
+  --rating-stroke-color: #a3b9c0;
+  --rating-stroke-width: 0.5;
+  --rating-item-x-padding: 0.2rem;
+}

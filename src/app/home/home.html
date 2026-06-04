@@ -1,0 +1,103 @@
+<div class="max-w-7xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between flex-wrap mb-4 sm:mb-3">
+    <h2 class="text-3xl font-bold mb-2 text-gray-800">Products</h2>
+    <div class="flex items-center">
+      <p-iconfield class="mx-2">
+        <p-inputicon class="pi pi-search" />
+        <input
+          [(ngModel)]="searchVal"
+          (input)="searchMethod()"
+          type="text"
+          pInputText
+          placeholder="Search"
+          class="w-full"
+        />
+      </p-iconfield>
+      <p-select
+        [options]="categoriesArr"
+        [(ngModel)]="selectedCategory"
+        (onChange)="filterByCategory()"
+        placeholder="Select Category"
+        class="w-full"
+      ></p-select>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    @for (product of filteredProductsArr; track $index) {
+      <p-card
+        class="group all overflow-hidden rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300"
+      >
+        <!-- Product Image -->
+        <ng-template pTemplate="header">
+          <div class="relative cursor-pointer">
+            <img
+              [routerLink]="['/details', product.id]"
+              [src]="authService.baseUrl + '/' + product.imageUrl"
+              class="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+
+            <!-- Category Badge -->
+            <span
+              class="absolute top-3 left-3 bg-white text-gray-700 text-xs font-semibold px-3 py-1 rounded-full shadow"
+            >
+              {{ product.category | titlecase }}
+            </span>
+          </div>
+        </ng-template>
+
+        <div class="flex flex-col gap-2">
+          <!-- Title -->
+          <h3
+            class="title text-lg font-semibold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition"
+          >
+            {{ product.title | titlecase }}
+          </h3>
+        </div>
+
+        <!-- Footer -->
+        <ng-template pTemplate="footer">
+          <div class="flex flex-col items-center justify-between mt-2 gap-2">
+            <!-- Price Section -->
+            <div class="flex flex-col">
+              <span class="text-xl font-bold text-blue-600"> ${{ product.sellingPrice }} </span>
+
+              <div class="flex items-start flex-col gap-1">
+                <!-- Stars + review count -->
+                <div class="flex gap-2 items-center">
+                  <ng-ratings
+                    class="customHW"
+                    [average]="product.avgReview"
+                    [items]="5"
+                    icon="star"
+                    [readOnly]="true"
+                  ></ng-ratings>
+
+                  <span class="text-xs text-gray-500"> ({{ product.reviewCount }}) </span>
+                </div>
+
+                <span class="text-sm font-semibold text-gray-700">
+                  {{ product.avgReview == 0 ? 'Nan' : product.avgReview }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Button -->
+            @if (authService.CheckRole() === 'customer') {
+              <button
+                (click)="sharedService.addtoCart(product)"
+                style="border-radius: 5px !important"
+                pButton
+                icon="pi pi-cart-plus"
+                label="Add"
+                class="p-button-sm p-button-rounded w-full"
+              ></button>
+            }
+          </div>
+        </ng-template>
+      </p-card>
+    }
+    @if (pordNotFound) {
+      <div class="text-red-600">No Product Found</div>
+    }
+  </div>
+</div>

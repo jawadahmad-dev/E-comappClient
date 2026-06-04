@@ -1,0 +1,225 @@
+@if (loadingService.$obsloading | async) {
+  <div class="fixed inset-0 flex items-center justify-center bg-black/30 z-[9999]">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+
+} @else if (temOrdersArr.length !== 0) {
+  <div class="card mt-10">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-5 px-4">
+      <div class="w-full lg:w-auto">
+        <h2 class="text-2xl font-bold text-gray-800">My Orders</h2>
+      </div>
+
+      <div
+        class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-end gap-4 w-full lg:w-auto"
+      >
+        <!-- 🔍 Search -->
+        <div class="flex flex-col w-full sm:w-64">
+          <label class="text-sm font-medium text-gray-600 mb-1"> Search </label>
+          <input
+            (input)="searchMethod()"
+            [(ngModel)]="searchVal"
+            type="text"
+            pInputText
+            placeholder="Search orders..."
+            class="w-full outline-none! bg-zinc-100 px-3 py-2 rounded-md"
+          />
+        </div>
+
+        <!-- 📦 Status -->
+        <div class="flex flex-col w-full sm:w-44">
+          <label class="text-sm font-medium text-gray-600 mb-1"> Status </label>
+          <p-select
+            [options]="filterStatusOptions"
+            [(ngModel)]="filterStatusValue"
+            (onChange)="filterByStatus()"
+            placeholder="All"
+            class="w-full"
+          ></p-select>
+        </div>
+
+        <!-- ⏱ Time -->
+        <div class="flex flex-col w-full sm:w-44">
+          <label class="text-sm font-medium text-gray-600 mb-1"> Time </label>
+          <p-select
+            [options]="filterByOrderTimeOptions"
+            [(ngModel)]="filterbyTimeValue"
+            (onChange)="filterByTime()"
+            placeholder="All"
+            class="w-full"
+          ></p-select>
+        </div>
+      </div>
+    </div>
+
+    <p-table
+      [value]="ordersArr"
+      sortField="createdAt"
+      [sortOrder]="-1"
+      [tableStyle]="{ 'min-width': '60rem' }"
+    >
+      <ng-template #header let-order>
+        <tr>
+          <th pSortableColumn="id" style="width: 20%">
+            <div class="flex items-center gap-2">OrderId</div>
+            <p-sortIcon field="id"></p-sortIcon>
+          </th>
+          <th style="width: 20%">
+            <div class="flex items-center gap-2">Items</div>
+          </th>
+
+          <th pSortableColumn="createdAt" style="width: 20%">
+            <div class="flex items-center gap-2">OrderDate</div>
+            <p-sortIcon field="createdAt"></p-sortIcon>
+          </th>
+
+          <th pSortableColumn="orderTotal" style="width: 20%">
+            <div class="flex items-center gap-2">Total</div>
+            <p-sortIcon field="orderTotal"></p-sortIcon>
+          </th>
+          <th style="width: 20%">
+            <div class="flex items-center gap-2">Status</div>
+          </th>
+
+          <th style="width: 20%">
+            <div class="flex items-center gap-2">Action</div>
+          </th>
+          <th style="width: 20%">
+            <div class="flex items-center gap-2">Order Details</div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-order>
+        <tr class="all">
+          <td class="orderId">{{ order.id }}</td>
+          <td>{{ order.orderItems.length }}</td>
+          <td>{{ order.createdAt | date: 'short' }}</td>
+          <td>{{ order.orderTotal | currency: 'USD' }}</td>
+          <td>
+            <span
+              class="px-4 py-1 font-medium"
+              [ngClass]="
+                order.status == 'Pending' || order.status == 'Canceled'
+                  ? 'bg-yellow-100 text-yellow-600'
+                  : order.status == 'Rejected'
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-green-100 text-green-600'
+              "
+            >
+              {{ order.status }}</span
+            >
+          </td>
+
+          <td>
+            <button
+              [disabled]="
+                order.status == 'Rejected' ||
+                order.status == 'Canceled' ||
+                order.status == 'Delivered'
+              "
+              (click)="CancelOrder(order.id)"
+              pButton
+              label="Cancel"
+              icon="pi pi-trash"
+              class="p-button-danger disabled:opacity-40"
+            ></button>
+          </td>
+
+          <td>
+            <div class="flex">
+              <button
+                type="button"
+                (click)="showDialog()"
+                pButton
+                icon="pi pi-external-link"
+              ></button>
+            </div>
+            <p-dialog
+              header="Order Details"
+              [resizable]="false"
+              [modal]="true"
+              [maximizable]="true"
+              appendTo="body"
+              [(visible)]="dialogVisible"
+              [style]="{ width: '75vw' }"
+              [contentStyle]="{ height: '300px' }"
+            >
+              <p-table
+                [value]="order.orderItems"
+                [scrollable]="true"
+                scrollHeight="flex"
+                [tableStyle]="{ 'min-width': '50rem' }"
+              >
+                <ng-template #header>
+                  <tr>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Product Total</th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                  <tr>
+                    <td>{{ item?.resProduct?.title }}</td>
+
+                    <td>
+                      <img
+                        [src]="authService.baseUrl + '/' + item?.resProduct?.imageUrl"
+                        alt="Purchased Product"
+                        class="w-24 rounded"
+                      />
+                    </td>
+                    <td>{{ item?.resProduct?.category }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.productTotal }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-dialog>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #footer>
+        @if (ordersArr.length === 0) {
+          <tr>
+            <td colspan="7" class="text-center text-red-500! py-4">
+              No orders found matching your filters.
+            </td>
+          </tr>
+        }
+        @if (pordNotFound) {
+          <tr>
+            <td colspan="7" class="text-center text-red-500! py-4">
+              No product found matching your search.
+            </td>
+          </tr>
+        }
+      </ng-template>
+    </p-table>
+  </div>
+} @else {
+  <div class="flex items-center justify-center min-h-[60vh] px-4">
+    <div class="bg-white shadow-lg rounded-2xl p-8 text-center max-w-md w-full">
+      <i class="pi pi-shopping-cart text-5xl text-gray-300 mb-4"></i>
+
+      <!-- Title -->
+      <h2 class="text-2xl font-semibold text-gray-800 mb-2">No Orders Yet</h2>
+
+      <!-- Description -->
+      <p class="text-gray-500 mb-6">
+        Looks like you haven’t placed any orders. Start exploring products now.
+      </p>
+
+      <!-- Button -->
+      <button
+        pButton
+        type="button"
+        label="Explore Products"
+        icon="pi pi-arrow-right"
+        class="p-button-success w-full"
+        routerLink="/"
+      ></button>
+    </div>
+  </div>
+}

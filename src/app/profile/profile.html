@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-gray-100 flex justify-center items-start py-10 px-4">
+  <!-- Profile Card -->
+  @if (userdata && !userdata.isDeleted) {
+    <div class="bg-white shadow-xl rounded-2xl w-full max-w-3xl p-8">
+      <!-- Header -->
+      <div class="flex items-center gap-6 border-b pb-6">
+        <!-- Avatar -->
+        <div
+          class="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold"
+        >
+          {{ userdata.name.charAt(0) }}
+        </div>
+
+        <!-- Basic Info -->
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-800">
+            {{ userdata.name | titlecase }}
+          </h2>
+
+          <p class="text-gray-500">
+            {{ userdata.email }}
+          </p>
+
+          <span
+            class="inline-block mt-2 px-3 py-1 text-sm rounded-full bg-green-100 text-green-700"
+          >
+            joined: {{ userdata.createdAt | date: 'short' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-500">Email</p>
+          <p class="font-semibold text-gray-800">{{ userdata.email }}</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-500">Account Type</p>
+          <p class="font-semibold text-gray-800">{{ userdata.role }}</p>
+        </div>
+        @if (authService.Claims()?.role == 'customer') {
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500">Name</p>
+            <p class="font-semibold text-gray-800">{{ userdata.customerDetails.name }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500">Address</p>
+            <p class="font-semibold text-gray-800">{{ userdata.customerDetails.address }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500">Phone</p>
+            <p class="font-semibold text-gray-800">{{ userdata.customerDetails.phone }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500">PostalCode</p>
+            <p class="font-semibold text-gray-800">{{ userdata.customerDetails.postalCode }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="flex gap-4 mt-8">
+        @if (authService.CheckRole() !== 'admin') {
+          <button
+            (click)="toggleDialoge()"
+            pButton
+            severity="danger"
+            label="Delete Account"
+            icon="pi pi-trash"
+            class="w-full"
+          ></button>
+        }
+      </div>
+    </div>
+  }
+  @if (userdata?.isDeleted === true) {
+    <div class="bg-white shadow-xl rounded-2xl p-10 text-center max-w-md w-full">
+      <!-- Icon -->
+      <div class="flex justify-center mb-4">
+        <div class="bg-red-100 text-red-500 p-4 rounded-full">
+          <i class="pi pi-user-minus text-3xl"></i>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Account Deleted</h2>
+
+      <!-- Message -->
+      <p class="text-gray-500 mb-6">
+        Your account has been deleted successfully. You can no longer access this profile.
+      </p>
+
+      <!-- Button -->
+      <button
+        pButton
+        label="Go to Home"
+        icon="pi pi-home"
+        class="p-button-sm p-button-primary"
+        routerLink="/"
+      ></button>
+    </div>
+  }
+  @if (showDialoge) {
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <!-- Dialog Box -->
+      <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fadeIn">
+        <!-- Icon -->
+        <div class="flex justify-center mb-4">
+          <div class="bg-red-100 text-red-600 p-4 rounded-full">
+            <i class="pi pi-exclamation-triangle text-3xl"></i>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-xl font-bold text-gray-800 text-center mb-2">Delete Account?</h2>
+
+        <!-- Message -->
+        <p class="text-gray-500 text-center mb-6">
+          Are you sure you want to delete your account? This action cannot be undone.
+        </p>
+
+        <!-- Buttons -->
+        <div class="flex gap-3">
+          <!-- Cancel -->
+          <button
+            pButton
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-secondary w-full"
+            (click)="toggleDialoge()"
+          ></button>
+
+          <!-- Delete -->
+          <button
+            pButton
+            label="Delete"
+            icon="pi pi-trash"
+            class="p-button-danger w-full"
+            (click)="deleteUser()"
+          ></button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

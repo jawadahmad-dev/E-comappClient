@@ -1,0 +1,161 @@
+<div class="min-h-screen bg-gray-50 p-4 md:p-6">
+  <!-- 📌 Header -->
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+      <i class="pi pi-chart-bar text-primary text-3xl"></i> Admin Dashboard
+    </h1>
+    <p class="text-gray-500 mt-1 text-sm md:text-base">
+      Monitor product performance, sales metrics, and inventory
+    </p>
+  </header>
+
+  <!-- 📊 Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <p-card class="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <ng-template pTemplate="content">
+        <div class="flex items-center gap-4">
+          <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">
+            <i class="pi pi-box text-2xl"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 font-medium">Total Products Sold</div>
+            <div class="text-2xl font-bold text-gray-800">{{ totalSold }}</div>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+
+    <p-card class="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <ng-template pTemplate="content">
+        <div class="flex items-center gap-4">
+          <div class="bg-green-100 text-green-600 p-3 rounded-lg">
+            <i class="pi pi-dollar text-2xl"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 font-medium">Total Profit</div>
+            <div class="text-2xl font-bold text-gray-800">${{ totalProfit }}</div>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+
+    <p-card class="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <ng-template pTemplate="content">
+        <div class="flex items-center gap-4">
+          <div class="bg-amber-100 text-amber-600 p-3 rounded-lg">
+            <i class="pi pi-trophy text-2xl"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 font-medium">Top Product</div>
+            <div class="text-lg font-bold text-gray-800 truncate max-w-[140px]">
+              {{ topProduct }}
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+
+    <p-card class="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <ng-template pTemplate="content">
+        <div class="flex items-center gap-4">
+          <div class="bg-purple-100 text-purple-600 p-3 rounded-lg">
+            <i class="pi pi-chart-line text-2xl"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 font-medium">Avg Profit/Product</div>
+            <div class="text-2xl font-bold text-gray-800">${{ avgProfitPerProduct }}</div>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+
+  <!-- 📈 Chart -->
+  <p-card class="mb-8 shadow-sm w-full">
+    <ng-template pTemplate="header">
+      <h2 class="text-lg font-semibold text-gray-800 px-4 pt-4">Product Performance Overview</h2>
+    </ng-template>
+
+    <div class="w-full p-2">
+      <highcharts-chart
+        [options]="chartOptions"
+        [update]="updateFlag"
+        style="width: 100%; height: 100%; display: block"
+      >
+      </highcharts-chart>
+    </div>
+  </p-card>
+
+  <!-- 📋 Product Table -->
+  <p-card class="shadow-sm">
+    <ng-template pTemplate="header">
+      <div class="flex items-center justify-between px-4 pt-4">
+        <h2 class="text-lg font-semibold text-gray-800">Product Performance Details</h2>
+      </div>
+    </ng-template>
+
+    <div class="overflow-x-auto">
+      <p-table [value]="salesArr" [tableStyle]="{ 'min-width': '50rem' }" class="w-full">
+        <ng-template pTemplate="header">
+          <tr class="bg-gray-50 text-gray-600 font-semibold text-sm">
+            <th pSortableColumn="rank" class="text-center w-16">
+              Rank <p-sortIcon field="rank"></p-sortIcon>
+            </th>
+            <th>Product</th>
+            <th pSortableColumn="resProduct.category">
+              Category <p-sortIcon field="resProduct.category"></p-sortIcon>
+            </th>
+            <th pSortableColumn="sellItemsQty" class="text-right">Qty Sold</th>
+            <th pSortableColumn="profitnLoss" class="text-right">Profit/Loss</th>
+            <th pSortableColumn="resProduct.stock" class="text-right w-24">Stock</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr class="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+            <td class="text-center">
+              <p-tag [value]="'#' + item.rank" severity="info" class="text-xs"></p-tag>
+            </td>
+            <td>
+              <div class="flex items-center gap-3">
+                <img
+                  [src]="authService.baseUrl + '/' + item.resProduct?.imageUrl"
+                  alt="{{ item.resProduct?.title }}"
+                  class="w-10 h-10 rounded-lg object-cover border border-gray-200 bg-gray-100"
+                />
+                <span class="font-medium text-gray-800 truncate max-w-[150px]">{{
+                  item.resProduct?.title
+                }}</span>
+              </div>
+            </td>
+            <td>
+              <p-tag
+                [value]="item.resProduct?.category || 'N/A'"
+                severity="secondary"
+                class="text-xs"
+              ></p-tag>
+            </td>
+            <td class="text-right font-medium">{{ item.sellItemsQty }}</td>
+            <td class="text-right">
+              <span
+                [class]="
+                  item.profitnLoss >= 0
+                    ? 'text-green-600 font-semibold'
+                    : 'text-red-500 font-semibold'
+                "
+              >
+                {{ item.profitnLoss >= 0 ? '+' : '' }}${{ item.profitnLoss }}
+              </span>
+            </td>
+            <td class="text-right">
+              <p-tag
+                [value]="item.resProduct?.stock"
+                [severity]="(item.resProduct?.stock || 0) < 10 ? 'danger' : 'success'"
+                class="text-xs"
+              ></p-tag>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-card>
+</div>

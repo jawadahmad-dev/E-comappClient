@@ -1,0 +1,296 @@
+<!-- Main Navbar -->
+<nav class="sticky top-0 z-40 border-b border-white/20 bg-white/80 backdrop-blur-xl shadow-sm">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <!-- Logo -->
+    <div routerLink="/" class="flex cursor-pointer items-center gap-3 transition hover:opacity-90">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+      >
+        <i class="pi pi-bolt text-sm"></i>
+      </div>
+      <h1 class="text-lg font-bold tracking-tight text-slate-900">App</h1>
+    </div>
+
+    <!-- Desktop Links -->
+    <div class="hidden ml-24! items-center gap-2 md:flex">
+      <a
+        routerLink="/"
+        routerLinkActive="bg-slate-900 text-white shadow-md"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >
+        <i class="pi pi-home mr-2"></i> Home
+      </a>
+      <a
+        routerLink="/shop"
+        routerLinkActive="bg-slate-900 text-white shadow-md"
+        class="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >
+        <i class="pi pi-shop mr-2"></i> Shop
+      </a>
+      <a
+        routerLink="/about"
+        routerLinkActive="bg-slate-900 text-white shadow-md"
+        class="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >
+        <i class="pi pi-building mr-2"></i> About
+      </a>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-3">
+      @if (authService.CheckRole() === 'admin') {
+        <a
+          routerLink="/admin"
+          class="hidden rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 lg:inline-flex"
+          >Dashboard</a
+        >
+      }
+
+      @if (authService.CheckRole() === 'customer') {
+        <button (click)="isCartOpen.set(true)" class="cursor-pointer p-1" aria-label="Open cart">
+          <span
+            pBadge
+            [value]="userCart.length"
+            severity="danger"
+            [hidden]="userCart.length === 0"
+          ></span>
+          <i class="pi pi-shopping-cart text-slate-700"></i>
+        </button>
+        <a
+          routerLink="/customer"
+          class="hidden rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 lg:inline-flex"
+          >Dashboard</a
+        >
+      }
+
+      @if (!authService.isLoggedIn()) {
+        <button
+          pButton
+          label="Sign In"
+          routerLink="/signin"
+          class="hidden p-button-sm p-button-rounded p-button-outlined sm:inline-flex"
+        ></button>
+      }
+
+      @if (authService.isLoggedIn()) {
+        <p-avatar
+          routerLink="/profile"
+          icon="pi pi-user"
+          shape="circle"
+          class="cursor-pointer hover:ring-2 hover:ring-blue-400 hover:ring-offset-2 rounded-full transition-all hidden sm:block"
+        ></p-avatar>
+        <button
+          pButton
+          label="Logout"
+          icon="pi pi-sign-out"
+          class="hidden p-button-sm p-button-rounded p-button-danger sm:inline-flex"
+          (click)="authService.logout()"
+        ></button>
+      }
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        (click)="isMobileMenuOpen.set(true)"
+        class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition"
+        aria-label="Open menu"
+      >
+        <i class="pi pi-bars text-xl text-slate-700"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu Drawer -->
+@if (isMobileMenuOpen()) {
+  <div class="fixed inset-0 z-50 md:hidden">
+    <div
+      class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+      (click)="isMobileMenuOpen.set(false)"
+    ></div>
+    <div
+      class="absolute inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col"
+    >
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <span class="text-lg font-bold text-slate-900">Navigation</span>
+        <button
+          (click)="isMobileMenuOpen.set(false)"
+          class="p-2 rounded-full hover:bg-slate-100 transition"
+        >
+          <i class="pi pi-times text-slate-600"></i>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4 space-y-2">
+        @for (link of mobileNavLinks; track link.label) {
+          <a
+            [routerLink]="link.route"
+            routerLinkActive="bg-slate-900 text-white shadow-md"
+            (click)="isMobileMenuOpen.set(false)"
+            class="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-slate-600 transition hover:bg-slate-100"
+          >
+            <i [class]="link.icon" class="text-lg"></i>
+            {{ link.label }}
+          </a>
+        }
+      </div>
+      <div class="border-t border-slate-200 p-4 space-y-3 bg-slate-50">
+        @if (!authService.isLoggedIn()) {
+          <button
+            pButton
+            label="Sign In"
+            routerLink="/signin"
+            class="w-full"
+            (click)="isMobileMenuOpen.set(false)"
+          ></button>
+        } @else {
+          <div
+            class="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm border border-slate-100 cursor-pointer"
+            routerLink="/profile"
+            (click)="isMobileMenuOpen.set(false)"
+          >
+            <p-avatar icon="pi pi-user" shape="circle" size="large"></p-avatar>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-slate-800 truncate">My Account</p>
+              <p class="text-xs text-slate-500">Profile & Settings</p>
+            </div>
+          </div>
+          <button
+            pButton
+            label="Logout"
+            severity="danger"
+            outlined
+            class="w-full"
+            (click)="authService.logout(); isMobileMenuOpen.set(false)"
+          ></button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Cart Overlay -->
+@if (isCartOpen()) {
+  <div
+    class="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm"
+    (click)="isCartOpen.set(false)"
+  ></div>
+}
+
+<!-- Cart Drawer -->
+<div
+  [class.translate-x-full]="!isCartOpen()"
+  [class.translate-x-0]="isCartOpen()"
+  class="fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+    <div>
+      <h2 class="text-xl font-semibold text-slate-900">Your Cart</h2>
+      <p class="text-sm text-slate-500">Review items before checkout</p>
+    </div>
+    <button
+      (click)="isCartOpen.set(false)"
+      class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+    >
+      <i class="pi pi-times text-base"></i>
+    </button>
+  </div>
+
+  <!-- Cart Items -->
+  <div class="flex-1 overflow-y-auto bg-slate-50 p-4">
+    @if (((sharedService.$ObsCart | async) ?? []).length > 0) {
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-sm font-medium text-slate-600"> {{ userCart.length }} item(s) </span>
+        <button
+          (click)="sharedService.clearCart()"
+          class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
+        >
+          <i class="pi pi-trash"></i> Clear Cart
+        </button>
+      </div>
+    } @else {
+      <div class="flex h-full flex-col items-center justify-center py-16 text-center">
+        <div
+          class="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200"
+        >
+          <i class="pi pi-shopping-cart text-3xl text-slate-400"></i>
+        </div>
+        <h2 class="mb-2 text-xl font-semibold text-slate-800">Your cart is empty</h2>
+        <p class="max-w-xs text-sm leading-6 text-slate-500">
+          Looks like you haven't added anything yet. Start exploring products and build your cart.
+        </p>
+      </div>
+    }
+
+    @for (item of sharedService.$ObsCart | async; track item.productId) {
+      <div
+        class="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+      >
+        <div class="flex gap-4">
+          <img
+            [src]="authService.baseUrl + '/' + item?.resProduct?.imageUrl"
+            class="h-20 w-20 rounded-xl object-cover ring-1 ring-slate-200"
+            alt="Product image"
+          />
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="truncate font-semibold text-slate-900">{{ item?.resProduct?.title }}</p>
+                <p class="mt-1 text-sm text-slate-500">${{ item?.resProduct?.sellingPrice }}</p>
+              </div>
+              <button
+                (click)="sharedService.removeItem(item.productId)"
+                class="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-500 transition hover:bg-red-100"
+              >
+                <i class="pi pi-trash text-sm"></i>
+              </button>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-2 py-1">
+                <button
+                  (click)="sharedService.ReuduceQtyPrice(item.productId)"
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-red-500 shadow-sm transition hover:bg-red-50"
+                >
+                  <i class="pi pi-minus text-xs"></i>
+                </button>
+                <span class="min-w-8 text-center text-sm font-semibold text-slate-700">{{
+                  item.quantity
+                }}</span>
+                <button
+                  (click)="sharedService.updateCart(item.productId)"
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm transition hover:bg-emerald-50"
+                >
+                  <i class="pi pi-plus text-xs"></i>
+                </button>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-slate-500">Item total</p>
+                <p class="font-semibold text-slate-900">${{ item.productTotal }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  @if (((sharedService.$ObsCart | async) ?? []).length > 0) {
+    <div class="border-t border-slate-200 bg-white p-5">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-base font-medium text-slate-600">Total</span>
+        <span class="text-2xl font-bold text-slate-900">${{ sharedService.total() }}</span>
+      </div>
+      <button
+        pButton
+        [disabled]="userCart.length <= 0"
+        (click)="show()"
+        label="Checkout"
+        icon="pi pi-credit-card"
+        class="w-full p-button-lg p-button-rounded p-button-success disabled:opacity-40"
+      ></button>
+    </div>
+  }
+</div>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,262 @@
+@if (loadingService.$obsloading | async) {
+  <div class="fixed inset-0 flex items-center justify-center bg-black/30 z-[9999]">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+} @else if (showForm) {
+  <div class="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <form
+      [formGroup]="AddProductForm"
+      (ngSubmit)="onSubmit()"
+      class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg space-y-6"
+    >
+      <div class="mb-4">
+        <p-button
+          (onClick)="toggleForm()"
+          label="Back"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          class="shadow-sm"
+        ></p-button>
+      </div>
+      <h2 class="text-2xl font-semibold text-center text-gray-700">Add Product</h2>
+
+      <p-floatlabel class="w-full">
+        <input pInputText id="title" formControlName="title" autocomplete="off" class="w-full" />
+        <label for="title">Title</label>
+      </p-floatlabel>
+
+      <p-floatlabel class="w-full">
+        <input
+          pInputText
+          id="description"
+          formControlName="description"
+          autocomplete="off"
+          class="w-full"
+        />
+        <label for="description">Description</label>
+      </p-floatlabel>
+
+      <!-- Category -->
+      <p-floatlabel class="w-full">
+        <p-select
+          [options]="catgoriesList"
+          id="category"
+          formControlName="category"
+          [editable]="true"
+          class="w-full"
+        />
+        <label for="category">Category</label>
+      </p-floatlabel>
+
+      <p-floatlabel class="w-full">
+        <input pInputText id="stock" formControlName="stock" autocomplete="off" class="w-full" />
+        <label for="category">Stock</label>
+      </p-floatlabel>
+
+      <!-- Image Upload -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm text-gray-600">Product Image</label>
+
+        <p-fileupload
+          mode="basic"
+          name="image"
+          [customUpload]="true"
+          chooseIcon="pi pi-upload"
+          maxFileSize="10000000"
+          (uploadHandler)="onFileSelect($event)"
+          [auto]="true"
+          chooseLabel="Browse"
+        ></p-fileupload>
+
+        <!-- File Name -->
+        @if (selectedFile) {
+          <small class="text-gray-500 flex items-center gap-2">
+            <i class="pi pi-file"></i>
+            {{ selectedFile.name }}
+          </small>
+        }
+      </div>
+      <!-- Price -->
+      <p-floatlabel class="w-full">
+        <input pInputText id="price" formControlName="price" autocomplete="off" class="w-full" />
+        <label for="price">Price</label>
+      </p-floatlabel>
+
+      <p-floatlabel class="w-full">
+        <input
+          #sellPrice
+          pInputText
+          id="sellingPrice"
+          formControlName="sellingPrice"
+          autocomplete="off"
+          class="w-full mb-0 pb-0"
+        />
+        <label for="sellingPrice">Selling Price</label>
+      </p-floatlabel>
+      @if (AddProductForm.errors?.['sellingPriceTooLow'] && sellPrice.value) {
+        <small class="text-red-500">Selling price must be greater than buy price</small>
+      }
+      <button
+        [disabled]="AddProductForm.invalid"
+        pButton
+        type="submit"
+        label="Save Product"
+        icon="pi pi-check"
+        class="w-full disabled:opacity-40"
+      ></button>
+    </form>
+  </div>
+} @else {
+  <div class="p-6">
+    <div class="flex justify-between items-center"></div>
+    @if (productsData().length !== 0) {
+      <div
+        class="max-w-7xl max-h-200! overflow-y-scroll! mx-auto mt-4 bg-white shadow-lg rounded-xl p-6"
+      >
+        <!-- Title -->
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <!-- 🏷 Title -->
+          <h2 class="text-2xl font-bold text-gray-800">Products</h2>
+
+          <!-- 🔧 Controls -->
+          <div
+            class="flex my-3 flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto"
+          >
+            <!-- 🔍 Search -->
+            <p-iconfield class="w-full sm:w-52">
+              <p-inputicon class="pi pi-search text-gray-400" />
+              <input
+                (input)="searchMethod()"
+                [(ngModel)]="searchVal"
+                type="text"
+                pInputText
+                placeholder="Search"
+                style="border: none !important"
+                class="w-full shadow-md! bg-zinc-50!"
+              />
+            </p-iconfield>
+
+            <!-- 📂 Category -->
+            <p-select
+              [options]="catgoriesList"
+              [(ngModel)]="selectedCategory"
+              (onChange)="filterByCategory()"
+              placeholder="Select Category"
+              class="w-full sm:w-52 shadow-md! bg-zinc-50!"
+            ></p-select>
+
+            <!-- ➕ Add Product -->
+            <button
+              pButton
+              label="Add Product"
+              icon="pi pi-plus"
+              (click)="toggleForm()"
+              class="w-full sm:w-auto shadow-md!"
+            ></button>
+
+            <!-- 🔄 Refresh -->
+            <p-button
+              (onClick)="getProducts()"
+              icon="pi pi-refresh"
+              rounded
+              raised
+              class="w-full sm:w-auto"
+            ></p-button>
+          </div>
+        </div>
+
+        <div class="card">
+          <p-table [value]="productsData()" [tableStyle]="{ 'min-width': '60rem' }">
+            <ng-template #header>
+              <tr>
+                <th>Title</th>
+                <th>Image</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>InStock</th>
+                <th>Reviews</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-product>
+              <tr class="all">
+                <td class="title">{{ product.title }}</td>
+                <td>
+                  <img
+                    [routerLink]="['/details', product.id]"
+                    [src]="authService.baseUrl + '/' + product.imageUrl"
+                    [alt]="product.name"
+                    class="w-24 rounded cursor-pointer"
+                  />
+                </td>
+                <td>{{ product.price | currency: 'USD' }}</td>
+                <td class="category">{{ product.category }}</td>
+                <td class="category">{{ product.stock }}</td>
+                <td>
+                  <div class="flex items-start flex-col">
+                    <div class="flex items-center">
+                      <ng-ratings
+                        class="customHW"
+                        [average]="product.avgReview"
+                        [items]="5"
+                        icon="star"
+                        [readOnly]="true"
+                      />
+
+                      <span class="text-sm text-gray-600"> ({{ product.reviewCount }}) </span>
+                    </div>
+                    <span>{{ product.avgReview }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-pencil"
+                      class="p-button-sm p-button-warning"
+                      (click)="Edit(product.id)"
+                    ></button>
+
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-trash"
+                      class="p-button-sm p-button-danger"
+                      (click)="Delete(product.id)"
+                    ></button>
+                  </div>
+                </td></tr
+            ></ng-template>
+            <ng-template #footer>
+              @if (pordNotFound) {
+                <tr>
+                  <td colspan="6" class="text-center text-red-500! py-4">
+                    No product found matching your search.
+                  </td>
+                </tr>
+              }
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    } @else {
+      <!-- EMPTY STATE -->
+      <div class="max-w-md mx-auto mt-20 text-center bg-white shadow-md rounded-xl p-10">
+        <i class="pi pi-box text-5xl text-gray-300"></i>
+
+        <h2 class="text-xl font-bold text-gray-700 mt-4">No Products Found</h2>
+
+        <p class="text-gray-500 mt-2">Start by adding your first product</p>
+
+        <button
+          pButton
+          label="Add Product"
+          icon="pi pi-plus"
+          class="p-button-success mt-5"
+          (click)="toggleForm()"
+        ></button>
+      </div>
+    }
+  </div>
+}

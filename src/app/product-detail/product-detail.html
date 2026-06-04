@@ -1,0 +1,181 @@
+<div class="min-h-screen bg-gray-100 py-10 px-4 flex justify-center">
+  <div class="max-w-6xl w-full space-y-8">
+    <!-- PRODUCT CARD -->
+    <div
+      *ngIf="product"
+      class="bg-white shadow-xl rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-8 p-8"
+    >
+      <!-- Image -->
+      <div class="flex justify-center items-center">
+        <img
+          *ngIf="product.imageUrl"
+          [src]="authService.baseUrl + '/' + product.imageUrl"
+          class="rounded-xl shadow-md object-cover w-full max-h-[400px] hover:scale-105 transition duration-300"
+        />
+      </div>
+
+      <!-- Info -->
+      <div class="flex flex-col justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800 mb-3">
+            {{ product.title }}
+          </h1>
+
+          <p class="text-gray-500 mb-3">
+            Category:
+            <span class="font-medium text-gray-700">
+              {{ product.category }}
+            </span>
+          </p>
+
+          <p class="text-gray-600 leading-relaxed mb-6">
+            {{ product.description }}
+          </p>
+
+          <!-- Price -->
+          <div class="flex items-center gap-4 mb-4">
+            <span class="text-3xl font-bold text-green-600"> ${{ product.sellingPrice }} </span>
+          </div>
+
+          <!-- Rating Preview -->
+          <div class="flex flex-col">
+            <div class="flex items-center">
+              <ng-ratings
+                class="customHW"
+                [average]="product.avgReview"
+                [items]="5"
+                icon="star"
+                [readOnly]="true"
+              />
+              <span class="text-sm text-gray-500"> ({{ product.reviewCount }}) </span>
+            </div>
+            <span>{{ product.avgReview }} </span>
+          </div>
+        </div>
+
+        <!-- Button -->
+        @if (authService.Claims()?.role == 'customer') {
+          <button
+            (click)="sharedService.addtoCart(product)"
+            pButton
+            label="Add to Cart"
+            icon="pi pi-cart-plus"
+            class="w-full mt-6 p-button-lg"
+          ></button>
+        } @else if (authService.Claims()?.role == 'admin') {
+          <button
+            routerLink="/admin/inventory"
+            pButton
+            label="View in Inventory"
+            icon="pi pi-eye"
+            class="w-full mt-6 p-button-lg"
+          ></button>
+        } @else {
+          <button
+            routerLink="/signin"
+            pButton
+            label="Please Sign-in"
+            icon="pi pi-user"
+            class="w-full mt-6 p-button-lg"
+          ></button>
+        }
+      </div>
+    </div>
+
+    @if (authService.Claims().role !== 'admin') {
+      <div class="bg-white shadow-lg rounded-2xl p-6 md:p-8 space-y-6">
+        <!-- Title -->
+        <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+          <i class="pi pi-star-fill text-yellow-500"></i>
+          Add Your Review
+        </h2>
+
+        <!-- Rating -->
+        <div class="flex flex-col gap-2">
+          <span class="text-sm text-gray-500">Your Rating</span>
+
+          <p-rating
+            #rating
+            [(ngModel)]="reviewValue"
+            cancel="false"
+            class="text-yellow-500"
+          ></p-rating>
+        </div>
+
+        @if (rating.value) {
+          <div class="flex flex-col gap-2">
+            <label for="description" class="text-sm text-gray-600"> Write your experience </label>
+
+            <textarea
+              pTextarea
+              id="description"
+              [(ngModel)]="reviewDesc"
+              rows="4"
+              style="border: 1px solid rgb(200, 191, 191) !important"
+              class="shadow outline-none w-full p-3 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-100"
+            ></textarea>
+          </div>
+        }
+
+        <div class="flex justify-end">
+          <button
+            (click)="postReview()"
+            pButton
+            label="Submit Review"
+            icon="pi pi-check"
+            class="p-button-success px-6 py-2 rounded-lg shadow hover:shadow-md transition"
+          ></button>
+        </div>
+      </div>
+    }
+
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-semibold mb-6 text-gray-800">Customer Reviews</h2>
+
+      <div *ngIf="reviewData.length; else noReviews" class="space-y-4">
+        <div
+          *ngFor="let review of reviewData"
+          class="border rounded-lg p-4 flex items-start gap-4 hover:shadow-md transition"
+        >
+          <!-- Avatar -->
+          <p-avatar icon="pi pi-user" shape="circle" class="bg-blue-500 text-white"></p-avatar>
+
+          <!-- Content -->
+          <div class="flex-1">
+            <div class="flex justify-between items-center">
+              <h3 class="font-semibold text-gray-700">{{ review.email }}</h3>
+              @if (authService.getToken() && review.userId == authService.Claims()?.nameid) {
+                <div class="flex gap-2">
+                  <button
+                    pButton
+                    icon="pi pi-pencil"
+                    class="p-button-text p-button-sm"
+                    (click)="editReview(review)"
+                  ></button>
+
+                  <button
+                    pButton
+                    icon="pi pi-trash"
+                    class="p-button-text p-button-danger p-button-sm"
+                    (click)="deleteReview(review.productId)"
+                  ></button>
+                </div>
+              }
+            </div>
+
+            <!-- Stars -->
+            <p-rating [readonly]="true" [ngModel]="review.reviewValue" class="mt-1"></p-rating>
+
+            <!-- Optional Comment -->
+            <p class="text-gray-500 text-sm mt-2">Rating: {{ review.reviewValue }} / 5</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <ng-template #noReviews>
+        <div class="text-gray-500 text-center py-6">No reviews yet. Be the first to review!</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
