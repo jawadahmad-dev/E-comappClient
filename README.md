@@ -88,7 +88,7 @@ npm install -g @angular/cli
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/ecommerce-frontend.git
+git clone https://github.com/jawadahmad-dev/E-comappClient.git
 cd ecommerce-frontend
 ```
 
